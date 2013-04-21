@@ -36,6 +36,9 @@ public class App
 			}
 			System.exit(0);
 		}
+		DataUploader du = new DataUploader(1);
+		du.confirmFinding(1);
+		du.deleteFinding(1);
 		System.exit(-2);
 
 	}

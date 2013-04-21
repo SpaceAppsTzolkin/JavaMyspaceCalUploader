@@ -102,9 +102,10 @@ public class DataUploader
 				response.setParams(params);
 				httpexecutor.postProcess(response, httpproc, context);
 
-				//System.out.println("<< Response: " + response.getStatusLine());
-				//System.out.println(EntityUtils.toString(response.getEntity()));
-				//System.out.println("==============");
+				// System.out.println("<< Response: " +
+				// response.getStatusLine());
+				// System.out.println(EntityUtils.toString(response.getEntity()));
+				// System.out.println("==============");
 				conn.close();
 			}
 		} finally
@@ -117,9 +118,98 @@ public class DataUploader
 
 	private String getCSV(Observation obs)
 	{
-		StringBuffer buf = new StringBuffer("satId,target,ra,dec,revolution,startdate,enddate,lowband,highband,wavelengthgenerated\n");
-		buf.append(obs.toCSVString()).append("\n");		
+		StringBuffer buf = new StringBuffer(
+				"satId,target,ra,dec,revolution,startdate,enddate,lowband,highband,wavelengthgenerated\n");
+		buf.append(obs.toCSVString()).append("\n");
 		return buf.toString();
 	}
 
+	/**
+	 * 
+	 * @param satelliteId
+	 * @param observationId
+	 * @return
+	 * @throws HttpException
+	 * @throws IOException
+	 */
+	public boolean confirmFinding(long observationId) throws IOException,
+			HttpException
+
+	{
+		return sendObservationCommand(observationId, "PUT");
+	}
+
+	public boolean deleteFinding(long observationId) throws IOException,
+			HttpException
+	{
+		return sendObservationCommand(observationId, "DELETE");
+	}
+
+	private boolean sendObservationCommand(long observationId, String httpCmd)
+			throws IOException, HttpException
+	{
+		HttpParams params = new SyncBasicHttpParams();
+		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+		HttpProtocolParams.setContentCharset(params, "UTF-8");
+		HttpProtocolParams.setUserAgent(params, "Test/1.1");
+		HttpProtocolParams.setUseExpectContinue(params, true);
+
+		HttpProcessor httpproc = new ImmutableHttpProcessor(
+				new HttpRequestInterceptor[]
+				{
+						// Required protocol interceptors
+						new RequestContent(), new RequestTargetHost(),
+						// Recommended protocol interceptors
+						new RequestConnControl(), new RequestUserAgent(),
+						new RequestExpectContinue() });
+
+		HttpRequestExecutor httpexecutor = new HttpRequestExecutor();
+
+		HttpContext context = new BasicHttpContext(null);
+
+		// TODO FIX FOR FINAL PROJECT
+		HttpHost host = new HttpHost("localhost", 9000);
+
+		DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
+		ConnectionReuseStrategy connStrategy = new DefaultConnectionReuseStrategy();
+
+		context.setAttribute(ExecutionContext.HTTP_CONNECTION, conn);
+		context.setAttribute(ExecutionContext.HTTP_TARGET_HOST, host);
+
+		try
+		{
+
+			HttpEntity[] requestBodies =
+			{ new StringEntity("observation=" + observationId, "UTF-8") };
+
+			for (int i = 0; i < requestBodies.length; i++)
+			{
+				if (!conn.isOpen())
+				{
+					Socket socket = new Socket(host.getHostName(),
+							host.getPort());
+					conn.bind(socket, params);
+				}
+				BasicHttpEntityEnclosingRequest request = new BasicHttpEntityEnclosingRequest(
+						httpCmd,
+						"/myspaceapps/satellite/observation?satellite=" + satId
+								+ "&observation=" + observationId + this.satId);
+				request.setEntity(requestBodies[i]);
+
+				request.setParams(params);
+				httpexecutor.preProcess(request, httpproc, context);
+				HttpResponse response = httpexecutor.execute(request, conn,
+						context);
+				response.setParams(params);
+				httpexecutor.postProcess(response, httpproc, context);
+				conn.close();
+			}
+		} finally
+		{
+			conn.close();
+		}
+
+		return true;
+
+	}
 }
