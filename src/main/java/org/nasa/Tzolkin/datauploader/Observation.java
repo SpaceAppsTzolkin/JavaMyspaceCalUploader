@@ -21,15 +21,15 @@ public class Observation
 
 	private double highBand;
 
-	private double ra;
+	private String ra;
 
-	private double dec;
+	private String dec;
 
 	private int revolution;
 
-	private Date startTime;
+	private String startTime;
 
-	private Date endTime;
+	private String endTime;
 
 	private boolean isWaveLengthGeneric;
 
@@ -83,26 +83,6 @@ public class Observation
 		this.highBand = highBand;
 	}
 
-	public double getRa()
-	{
-		return ra;
-	}
-
-	public void setRa(double ra)
-	{
-		this.ra = ra;
-	}
-
-	public double getDec()
-	{
-		return dec;
-	}
-
-	public void setDec(double dec)
-	{
-		this.dec = dec;
-	}
-
 	public int getRevolution()
 	{
 		return revolution;
@@ -113,24 +93,61 @@ public class Observation
 		this.revolution = revolution;
 	}
 
-	public Date getStartTime()
+
+
+	public String getRa()
+	{
+		return ra;
+	}
+
+	public void setRa(String ra)
+	{
+		this.ra = ra;
+	}
+
+	public String getDec()
+	{
+		return dec;
+	}
+
+	public void setDec(String dec)
+	{
+		this.dec = dec;
+	}
+
+	public String getStartTime()
 	{
 		return startTime;
 	}
 
-	public void setStartTime(Date startTime)
+	public void setStartTime(String startTime)
 	{
 		this.startTime = startTime;
 	}
 
-	public Date getEndTime()
+	public String getEndTime()
 	{
 		return endTime;
 	}
 
-	public void setEndTime(Date endTime)
+	public void setEndTime(String endTime)
 	{
 		this.endTime = endTime;
+	}
+
+	public boolean isWaveLengthGeneric()
+	{
+		return isWaveLengthGeneric;
+	}
+
+	public void setWaveLengthGeneric(boolean isWaveLengthGeneric)
+	{
+		this.isWaveLengthGeneric = isWaveLengthGeneric;
+	}
+	
+	public void setWaveLengthGeneric(String isWaveLengthGeneric)
+	{
+		this.isWaveLengthGeneric = Boolean.parseBoolean(isWaveLengthGeneric);
 	}
 
 	public Object toCSVString()
